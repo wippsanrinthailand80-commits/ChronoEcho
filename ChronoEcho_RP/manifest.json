@@ -1,0 +1,23 @@
+{
+  "format_version": 2,
+  "header": {
+    "name": "Chrono Echo RP",
+    "description": "Resource pack for Chrono Echo — rewind effects and sounds.",
+    "uuid": "d4e5f6a7-b8c9-0123-def0-123456789012",
+    "version": [1, 0, 0],
+    "min_engine_version": [1, 20, 40]
+  },
+  "modules": [
+    {
+      "type": "resources",
+      "uuid": "e5f6a7b8-c9d0-1234-ef01-234567890123",
+      "version": [1, 0, 0]
+    }
+  ],
+  "dependencies": [
+    {
+      "uuid": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+      "version": [1, 0, 0]
+    }
+  ]
+}
