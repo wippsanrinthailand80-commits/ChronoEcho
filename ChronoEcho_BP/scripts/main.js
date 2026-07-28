@@ -4,7 +4,7 @@ import {
   Player,
   ItemStack,
   EnchantmentType,
-  MinecraftEffectTypes,
+  EffectTypes,
   GameMode,
 } from "@minecraft/server";
 
@@ -33,23 +33,23 @@ const CONFIG = {
 };
 
 // ─── NEGATIVE EFFECTS POOL ──────────────────────────────────
-// Every vanilla negative status effect. One is chosen at random
+// Every vanilla negative status effect ID. One is chosen at random
 // when the over-rewind penalty activates (rewind count > 10).
 const NEGATIVE_EFFECTS = [
-  MinecraftEffectTypes.badOmen,
-  MinecraftEffectTypes.blindness,
-  MinecraftEffectTypes.darkness,
-  MinecraftEffectTypes.fatalPoison,
-  MinecraftEffectTypes.glowing,
-  MinecraftEffectTypes.hunger,
-  MinecraftEffectTypes.levitation,
-  MinecraftEffectTypes.miningFatigue,
-  MinecraftEffectTypes.nausea,
-  MinecraftEffectTypes.poison,
-  MinecraftEffectTypes.slowness,
-  MinecraftEffectTypes.unluck,
-  MinecraftEffectTypes.weakness,
-  MinecraftEffectTypes.wither,
+  "bad_omen",
+  "blindness",
+  "darkness",
+  "fatal_poison",
+  "glowing",
+  "hunger",
+  "levitation",
+  "mining_fatigue",
+  "nausea",
+  "poison",
+  "slowness",
+  "unluck",
+  "weakness",
+  "wither",
 ];
 
 // ─── PER-PLAYER STATE ────────────────────────────────────────
@@ -226,10 +226,13 @@ function findSafeSnapshot(state, isFallDeath) {
 function playRewindEffect(player) {
   // Flash of blindness (dramatic blackout)
   try {
-    player.addEffect(MinecraftEffectTypes.blindness, CONFIG.BLINDNESS_TICKS, {
-      amplifier: 0,
-      showParticles: false,
-    });
+    const blindness = EffectTypes.get("blindness");
+    if (blindness) {
+      player.addEffect(blindness, CONFIG.BLINDNESS_TICKS, {
+        amplifier: 0,
+        showParticles: false,
+      });
+    }
   } catch (_) {}
 
   // Explosion particles at the rewind location
@@ -262,9 +265,13 @@ function playRewindEffect(player) {
 ══════════════════════════════════════════════════════════════*/
 
 function applyOverRewindPenalty(player) {
-  // Pick a random debuff
-  const effectType =
+  // Pick a random debuff name string
+  const effectName =
     NEGATIVE_EFFECTS[Math.floor(Math.random() * NEGATIVE_EFFECTS.length)];
+
+  // Resolve the EffectType object from the registry
+  const effectType = EffectTypes.get(effectName);
+  if (!effectType) return;
 
   // Amplifier 0 = Level 1, 1 = Level 2, 2 = Level 3
   const amplifier = Math.floor(Math.random() * 3);
@@ -294,10 +301,10 @@ function applyOverRewindPenalty(player) {
   } catch (_) {}
 
   // Notify the player
-  const effectName = effectType.id.split(":").pop().replace(/_/g, " ");
+  const displayName = effectName.replace(/_/g, " ");
   player.sendMessage(
     `\u00A75[Return by Death] \u00A7cTime Strain! ` +
-    `Debuff: \u00A7e${effectName} ${ampToLevel(amplifier)} ` +
+    `Debuff: \u00A7e${displayName} ${ampToLevel(amplifier)} ` +
     `for ${seconds}s`
   );
 }
@@ -434,7 +441,7 @@ world.beforeEvents.entityHurt.subscribe((event) => {
   // Only apply in survival / adventure
   try {
     const mode = player.getGameMode();
-    if (mode === GameMode.creative || mode === GameMode.spectator) return;
+    if (mode === GameMode.Creative || mode === GameMode.Spectator) return;
   } catch (_) {
     // getGameMode unavailable — assume survival
   }
@@ -466,7 +473,7 @@ world.beforeEvents.entityHurt.subscribe((event) => {
 function isExcluded(player) {
   try {
     const mode = player.getGameMode();
-    return mode === GameMode.creative || mode === GameMode.spectator;
+    return mode === GameMode.Creative || mode === GameMode.Spectator;
   } catch (_) {
     return false;
   }
@@ -544,12 +551,8 @@ world.afterEvents.playerLeave.subscribe((event) => {
   STARTUP MESSAGE
 ══════════════════════════════════════════════════════════════*/
 
-world.afterEvents.worldInitialize?.subscribe?.(() => {
-  // Optional: broadcast that the addon loaded
-});
-
 system.runTimeout(() => {
   world.sendMessage(
-    `\u00A75[Return by Death] \u00A77The system is watching. Death is not the end.`
+    `\u00A75[Chrono Echo] \u00A77The system is watching. Death is not the end.`
   );
 }, 40); // 2 seconds after world load

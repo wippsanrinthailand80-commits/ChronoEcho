@@ -5,7 +5,7 @@
     "description": "Die and rewind time. Fall deaths = perfect rewind. Other deaths cost items. Over-rewind at your own risk.",
     "uuid": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
     "version": [1, 0, 0],
-    "min_engine_version": [1, 20, 40]
+    "min_engine_version": [1, 26, 33]
   },
   "modules": [
     {
@@ -24,7 +24,7 @@
   "dependencies": [
     {
       "module_name": "@minecraft/server",
-      "version": "1.12.0"
+      "version": "2.8.0"
     }
   ]
 }

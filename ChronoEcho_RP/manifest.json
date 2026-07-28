@@ -5,7 +5,7 @@
     "description": "Resource pack for Chrono Echo — rewind effects and sounds.",
     "uuid": "d4e5f6a7-b8c9-0123-def0-123456789012",
     "version": [1, 0, 0],
-    "min_engine_version": [1, 20, 40]
+    "min_engine_version": [1, 26, 33]
   },
   "modules": [
     {
